@@ -13,22 +13,24 @@ enum Role {
   ROLE_ADMIN = 2;
 }
 
+// Клиент CRM-системы.
 message Client {
+  // Уникальный идентификатор клиента
   string uuid = 1 [
     (validate.rules).string.uuid = true
   ];
-
+  // Имя клиента
   string name = 2 [
     (validate.rules).string = {
       min_len: 2
       max_len: 100
     }
   ];
-
+  // Номер телефона клиента
   string phone = 3 [
     (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
   ];
-
+  // Email клиента
   string email = 4 [
     (validate.rules).string = {
       email: true
@@ -36,19 +38,20 @@ message Client {
     }
   ];
 }
-
+// Запрос на создание клиента
 message CreateClientRequest {
+  // Имя клиента
   string name = 1 [
     (validate.rules).string = {
       min_len: 2
       max_len: 100
     }
   ];
-
+  // Номер телефона клиента
   string phone = 2 [
     (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
   ];
-
+  // Email клиента
   string email = 3 [
     (validate.rules).string = {
       email: true
@@ -56,20 +59,23 @@ message CreateClientRequest {
     }
   ];
 }
-
+// Ответ на создание клиента
 message CreateClientResponse {
+  // Созданный клиент
   Client client = 1 [
     (validate.rules).message.required = true
   ];
 }
-
+// Запрос на получение клиента
 message GetClientRequest {
+  // UUID клиента
   string uuid = 1 [
     (validate.rules).string.uuid = true
   ];
 }
-
+// Ответ с информацией о клиенте
 message GetClientResponse {
+  // Найденный клиент
   Client client = 1 [
     (validate.rules).message.required = true
   ];

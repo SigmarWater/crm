@@ -11,6 +11,7 @@ vars:
   PROTOC_GEN_GO_GRPC_VERSION: 'v1.5.1'
   PROTOC_GEN_VALIDATE_VERSION: 'v1.2.1'
   PROTOC_GEN_GRPC_GATEWAY_VERSION: 'v2.26.3'
+  PROTOC_GEN_OPENAPIV2_VERSION: 'v2.26.3'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint'
@@ -21,6 +22,7 @@ vars:
   PROTOC_GEN_GO_GRPC: '{{.BIN_DIR}}/protoc-gen-go-grpc'
   PROTOC_GEN_VALIDATE: '{{.BIN_DIR}}/protoc-gen-validate'
   PROTOC_GEN_GRPC_GATEWAY: '{{.BIN_DIR}}/protoc-gen-grpc-gateway'
+  PROTOC_GEN_OPENAPIV2: '{{.BIN_DIR}}/protoc-gen-openapiv2'
 
 tasks:
   install-formatters:
@@ -103,6 +105,10 @@ tasks:
           echo '📦 Installing protoc-gen-validate...'
           GOBIN={{.BIN_DIR}} go install github.com/envoyproxy/protoc-gen-validate@{{.PROTOC_GEN_VALIDATE_VERSION}}
         }
+        [ -f {{.PROTOC_GEN_OPENAPIV2}} ] || {
+          echo 'Installing protoc-gen-openapiv2...'
+          GOBIN={{.BIN_DIR}} go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@{{.PROTOC_GEN_OPENAPIV2_VERSION}}
+        }        
 
   proto:update-deps:
     deps: [ install-buf ]
@@ -122,7 +128,9 @@ tasks:
         echo "Проверяем .proto файлы..."
         ../bin/buf.exe lint
 
-  proto:gen:
+  
+
+  proto:gen-code:
     deps: [ install-buf, proto:update-deps, proto:install-plugins]
     desc: Генерация Go-кода из .proto
     # dir - дириктория, откуда выполняются команды, в нашем случае proto
@@ -133,3 +141,12 @@ tasks:
       - |
         echo "Генерируем Go код из .proto..."
         ../bin/buf.exe generate
+
+  proto:gen:
+    deps: [proto:gen-code]
+    desc: Генерация документации
+    dir: proto
+    cmds:
+      - |
+        echo "Генерируем Go документацию..."
+        ../bin/buf.exe generate --template buf.gen.openapi.yaml

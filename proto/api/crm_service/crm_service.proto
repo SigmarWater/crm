@@ -7,7 +7,9 @@ option go_package = "crm/pkg/api/crm_service";
 import "api/crm_service/crm_messages.proto";
 import "google/api/annotations.proto";
 
+// CRMService предоставляет API для работы с клиентами.
 service CRMService {
+  // Создаёт нового клиента.
   rpc CreateClient(CreateClientRequest) returns (CreateClientResponse){
     option (google.api.http) = {
       post: "/crm/v1/client"
@@ -15,6 +17,7 @@ service CRMService {
     };
   };
 
+  // Получает клиента по UUID.
   rpc GetClient(GetClientRequest) returns (GetClientResponse){
       option (google.api.http) = {
           get: "/crm/v1/client/{uuid}"

@@ -1,0 +1,175 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/crm_service/crm_service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "CRMService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/crm/v1/client": {
+      "post": {
+        "summary": "Создаёт нового клиента.",
+        "operationId": "CRMService_CreateClient",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crm_serviceCreateClientResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crm_serviceCreateClientRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CRMService"
+        ]
+      }
+    },
+    "/crm/v1/client/{uuid}": {
+      "get": {
+        "summary": "Получает клиента по UUID.",
+        "operationId": "CRMService_GetClient",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crm_serviceGetClientResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uuid",
+            "description": "UUID клиента",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CRMService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "crm_serviceClient": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "title": "Уникальный идентификатор клиента"
+        },
+        "name": {
+          "type": "string",
+          "title": "Имя клиента"
+        },
+        "phone": {
+          "type": "string",
+          "title": "Номер телефона клиента"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email клиента"
+        }
+      },
+      "description": "Клиент CRM-системы."
+    },
+    "crm_serviceCreateClientRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Имя клиента"
+        },
+        "phone": {
+          "type": "string",
+          "title": "Номер телефона клиента"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email клиента"
+        }
+      },
+      "title": "Запрос на создание клиента"
+    },
+    "crm_serviceCreateClientResponse": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "$ref": "#/definitions/crm_serviceClient",
+          "title": "Созданный клиент"
+        }
+      },
+      "title": "Ответ на создание клиента"
+    },
+    "crm_serviceGetClientResponse": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "$ref": "#/definitions/crm_serviceClient",
+          "title": "Найденный клиент"
+        }
+      },
+      "title": "Ответ с информацией о клиенте"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

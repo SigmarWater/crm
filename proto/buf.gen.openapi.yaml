@@ -1,0 +1,14 @@
+version: v2
+
+plugins:
+  - local: ../bin/protoc-gen-openapiv2
+    out: ../docs/openapi
+    opt:
+      - allow_merge=true
+      - merge_file_name=crm
+      - json_names_for_fields=true
+
+inputs:
+  - directory: .
+    paths:
+      - api/crm_service/crm_service.proto

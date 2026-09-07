@@ -132,11 +132,22 @@ func main() {
 			return
 		}
 
+		// OpenAPI JSON
+		fileServer := http.FileServer(http.Dir("docs/openapi"))
+
 		// Создаем HTTP маршрутизатор
 		httpMux := http.NewServeMux()
 
 		// Регистрируем API эндпоинты
 		httpMux.Handle("/", mux)
+
+		// Swagger UI эндпоинты
+		// Swagger UI: /swagger/ → docs/openapi/
+		httpMux.Handle("/swagger/",
+			http.StripPrefix("/swagger/", fileServer),
+		)
+
+		httpMux.Handle("/crm.swagger.json", fileServer)
 
 		// Создаем HTTP сервер
 		gwServer = &http.Server{
@@ -146,7 +157,7 @@ func main() {
 		}
 
 		// Запускаем HTTP сервер
-		log.Printf("🌐 HTTP server with gRPC-Gateway listening on %d\n", httpPort)
+		log.Printf("HTTP server with gRPC-Gateway listening on %d\n", httpPort)
 		err = gwServer.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			log.Printf("Failed to serve HTTP: %v\n", err)
@@ -167,10 +178,10 @@ func main() {
 		if err := gwServer.Shutdown(shutdownCtx); err != nil {
 			log.Printf("HTTP server shutdown error: %v", err)
 		}
-		log.Println("✅ HTTP server stopped")
+		log.Println("HTTP server stopped")
 	}
 
 	// В конце останавливаем gRPC сервер
 	server.GracefulStop()
-	log.Println("✅ gRPC server stopped")
+	log.Println("gRPC server stopped")
 }

@@ -1,0 +1,18 @@
+#  buf.yaml — конфигурационный файл для инструмента Buf,
+#  который используется для работы с Protocol Buffers (Protobuf)
+
+# Указывает версию формата конфигурации Buf.
+version: v2
+
+modules:
+  - path: .
+
+# Настройки линтера для проверки качества proto-файлов:
+lint:
+  use:
+    - STANDARD
+    - COMMENT_ENUM
+    - COMMENT_MESSAGE
+  except:
+    - RPC_RESPONSE_STANDARD_NAME
+    - RPC_REQUEST_RESPONSE_UNIQUE

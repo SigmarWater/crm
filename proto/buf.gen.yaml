@@ -1,0 +1,24 @@
+# buf.gen.yaml - конфигурационный файл для генерации кода из Protobuf файлов с помощью Buf.
+
+version: v2
+
+# Удаляет сгенеренное ранее, то что находится в out каждого плагина.
+clean: true
+
+# список плагинов
+plugins:
+  # protoc-gen-go - генерация go типов для message и enum (https://github.com/protocolbuffers/protobuf-go)
+  - local: ../bin/protoc-gen-go # путь к испольняемому файлу плагина
+    out: ../pkg # Выходная дириктория (куда поместится результат работы)
+    # Генерирует выходные файлы с путями, соответствующими исходной структуре .proto файлов.
+    opt:
+      - paths=source_relative
+  # protoc-gen-go-grpc - генерация grpc сервиса и клиента (https://github.com/grpc/grpc-go)
+  - local: ../bin/protoc-gen-go-grpc
+    out: ../pkg
+    opt:
+      - paths=source_relative
+inputs:
+  # путь для плагинов до наших protobuf файлов относительно расположения buf.gen.yaml
+
+  - directory: .

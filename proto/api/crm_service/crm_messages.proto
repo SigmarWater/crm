@@ -1,0 +1,41 @@
+syntax="proto3";
+
+package crm.proto.api.crm_service;
+
+option go_package = "crm/pkg/api/crm_service";
+
+import "google/protobuf/wrappers.proto";
+
+enum Role{
+  ROLE_UNSPECIFIED = 0;
+  ROLE_USER = 1;
+  ROLE_ADMIN = 2;
+};
+
+
+message Client {
+  int64 id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue phone = 3;
+  google.protobuf.StringValue email = 4;
+  Role role = 5;
+}
+
+message CreateClientRequest {
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue phone = 2;
+  google.protobuf.StringValue email = 3;
+}
+
+message CreateClientResponse {
+  Client client = 1;
+}
+
+message GetClientRequest {
+  int64 id = 1;
+}
+
+message GetClientResponse {
+  Client client = 1;
+}
+

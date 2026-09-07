@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package crm.proto.api.crm_service;
+
+option go_package = "crm/pkg/api/crm_service";
+
+import "api/crm_service/crm_messages.proto";
+
+service CRMService {
+  rpc CreateClient(CreateClientRequest) returns (CreateClientResponse);
+  rpc GetClient(GetClientRequest) returns (GetClientResponse);
+}
+

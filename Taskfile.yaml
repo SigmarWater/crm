@@ -9,7 +9,7 @@ vars:
   BUF_VERSION: '1.53.0'
   PROTOC_GEN_GO_VERSION: 'v1.36.6'
   PROTOC_GEN_GO_GRPC_VERSION: 'v1.5.1'
-
+  PROTOC_GEN_VALIDATE_VERSION: 'v1.2.1'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint'
@@ -18,7 +18,7 @@ vars:
   BUF: '{{.BIN_DIR}}/buf'
   PROTOC_GEN_GO: '{{.BIN_DIR}}/protoc-gen-go'
   PROTOC_GEN_GO_GRPC: '{{.BIN_DIR}}/protoc-gen-go-grpc'
-
+  PROTOC_GEN_VALIDATE: '{{.BIN_DIR}}/protoc-gen-validate'
 
 tasks:
   install-formatters:
@@ -26,11 +26,11 @@ tasks:
     cmds:
       - |
         [ -f {{.GOFUMPT}} ] || {
-          echo '📦 Устанавливаем gofumpt {{.GOFUMPT_VERSION}}...'
+          echo 'Устанавливаем gofumpt {{.GOFUMPT_VERSION}}...'
           GOBIN={{.BIN_DIR}} go install mvdan.cc/gofumpt@{{.GOFUMPT_VERSION}}
         }
         [ -f {{.GCI}} ] || {
-          echo '📦 Устанавливаем gci {{.GCI_VERSION}}...'
+          echo 'Устанавливаем gci {{.GCI_VERSION}}...'
           GOBIN={{.BIN_DIR}} go install github.com/daixiang0/gci@{{.GCI_VERSION}}
         }
     status:
@@ -42,10 +42,10 @@ tasks:
     deps: [ install-formatters ]
     cmds:
       - |
-        echo "🧼 Форматируем через gofumpt ..."
+        echo "Форматируем через gofumpt ..."
         find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GOFUMPT}} -extra -w {} +
       - |
-        echo "🎯 Сортируем импорты через gci ..."
+        echo "Сортируем импорты через gci ..."
         find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GCI}} write -s standard -s default -s "prefix(github.com/SigmarWater/messenger/)" {} +
 
   install-golangci-lint:
@@ -54,7 +54,7 @@ tasks:
       - |
         [ -f {{.GOLANGCI_LINT}} ] || {
           mkdir -p {{.BIN_DIR}}
-          echo "📦 Устанавливаем golangci-lint {{.GOLANGCI_LINT_VERSION}}..."
+          echo "Устанавливаем golangci-lint {{.GOLANGCI_LINT_VERSION}}..."
           GOBIN={{.BIN_DIR}} go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@{{.GOLANGCI_LINT_VERSION}}
         }
     status:
@@ -72,7 +72,7 @@ tasks:
       - |
         mkdir -p {{.BIN_DIR}}
         [ -f {{.BUF}} ] || {
-          echo '📦 Устанавливаем buf {{.BUF_VERSION}}...'
+          echo 'Устанавливаем buf {{.BUF_VERSION}}...'
           GOBIN={{.BIN_DIR}} go install github.com/bufbuild/buf/cmd/buf@v{{.BUF_VERSION}}
         }
     status:
@@ -83,22 +83,13 @@ tasks:
     cmds:
       - |
         [ -f {{.PROTOC_GEN_GO}} ] || {
-          echo '📦 Installing protoc-gen-go...'
+          echo 'Installing protoc-gen-go...'
           GOBIN={{.BIN_DIR}} go install google.golang.org/protobuf/cmd/protoc-gen-go@{{.PROTOC_GEN_GO_VERSION}}
         }
         [ -f {{.PROTOC_GEN_GO_GRPC}} ] || {
-          echo '📦 Installing protoc-gen-go-grpc...'
+          echo 'Installing protoc-gen-go-grpc...'
           GOBIN={{.BIN_DIR}} go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@{{.PROTOC_GEN_GO_GRPC_VERSION}}
         }
-        [ -f {{.PROTOC_GEN_GRPC_GATEWAY}} ] || {
-          echo '📦 Installing protoc-gen-grpc-gateway...'
-          GOBIN={{.BIN_DIR}} go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@{{.PROTOC_GEN_GRPC_GATEWAY_VERSION}}
-        }
-        [ -f {{.PROTOC_GEN_VALIDATE}} ] || {
-          echo '📦 Installing protoc-gen-validate...'
-          GOBIN={{.BIN_DIR}} go install github.com/envoyproxy/protoc-gen-validate@{{.PROTOC_GEN_VALIDATE_VERSION}}
-        }
-  
 
   proto:update-deps:
     deps: [ install-buf ]
@@ -106,7 +97,7 @@ tasks:
     dir: proto
     cmds:
       - |
-        echo "🔄 Обновляем зависимости buf..."
+        echo "Обновляем зависимости buf..."
         ../bin/buf.exe dep update
 
   proto:lint:
@@ -115,11 +106,11 @@ tasks:
     dir: proto
     cmds:
       - |
-        echo "🔍 Проверяем .proto файлы..."
+        echo "Проверяем .proto файлы..."
         ../bin/buf.exe lint
 
   proto:gen:
-    deps: [ install-buf, proto:install-plugins, proto:update-deps]
+    deps: [ install-buf, proto:update-deps, proto:install-plugins]
     desc: Генерация Go-кода из .proto
     # dir - дириктория, откуда выполняются команды, в нашем случае proto
     # (поэтому мы и пишем ../bin/buf.exe)
@@ -127,5 +118,5 @@ tasks:
     dir: proto
     cmds:
       - |
-        echo "🏗️ Генерируем Go код из .proto..."
+        echo "Генерируем Go код из .proto..."
         ../bin/buf.exe generate

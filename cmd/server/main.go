@@ -78,7 +78,10 @@ func main() {
 	}()
 
 	server := grpc.NewServer(
-		grpc.UnaryInterceptor(interceptor.LoggerInterceptor()),
+		grpc.ChainUnaryInterceptor(
+			interceptor.LoggerInterceptor(),
+			interceptor.ValidatorInterceptor(),
+		),
 	)
 
 	service := &crmService{

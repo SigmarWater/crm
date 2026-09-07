@@ -1,40 +1,76 @@
-syntax="proto3";
+syntax = "proto3";
 
 package crm.proto.api.crm_service;
 
 option go_package = "crm/pkg/api/crm_service";
 
 import "google/protobuf/wrappers.proto";
+import "validate/validate.proto";
 
-enum Role{
+enum Role {
   ROLE_UNSPECIFIED = 0;
   ROLE_USER = 1;
   ROLE_ADMIN = 2;
-};
-
+}
 
 message Client {
-  string uuid = 1;
-  string name = 2;
-  string phone = 3;
-  string email = 4;
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
+  ];
+
+  string name = 2 [
+    (validate.rules).string = {
+      min_len: 2
+      max_len: 100
+    }
+  ];
+
+  string phone = 3 [
+    (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
+  ];
+
+  string email = 4 [
+    (validate.rules).string = {
+      email: true
+      max_len: 255
+    }
+  ];
 }
 
 message CreateClientRequest {
-  string name = 1;
-  string phone = 2;
-  string email = 3;
+  string name = 1 [
+    (validate.rules).string = {
+      min_len: 2
+      max_len: 100
+    }
+  ];
+
+  string phone = 2 [
+    (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
+  ];
+
+  string email = 3 [
+    (validate.rules).string = {
+      email: true
+      max_len: 255
+    }
+  ];
 }
 
 message CreateClientResponse {
-  Client client = 1;
+  Client client = 1 [
+    (validate.rules).message.required = true
+  ];
 }
 
 message GetClientRequest {
-  string uuid = 1;
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
+  ];
 }
 
 message GetClientResponse {
-  Client client = 1;
+  Client client = 1 [
+    (validate.rules).message.required = true
+  ];
 }
-

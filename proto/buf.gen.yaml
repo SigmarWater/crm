@@ -1,4 +1,5 @@
 # buf.gen.yaml - конфигурационный файл для генерации кода из Protobuf файлов с помощью Buf.
+#  «Когда я запускаю buf generate, какие генераторы использовать и куда положить результат?»
 
 version: v2
 
@@ -18,6 +19,12 @@ plugins:
     out: ../pkg
     opt:
       - paths=source_relative
+  # Плагин для генерации кода валидации
+  - local: ../bin/protoc-gen-validate
+    out: ../pkg
+    opt:
+      - paths=source_relative
+      - lang=go
 inputs:
   # путь для плагинов до наших protobuf файлов относительно расположения buf.gen.yaml
 

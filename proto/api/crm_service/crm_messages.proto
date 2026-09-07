@@ -14,17 +14,16 @@ enum Role{
 
 
 message Client {
-  int64 id = 1;
-  google.protobuf.StringValue name = 2;
-  google.protobuf.StringValue phone = 3;
-  google.protobuf.StringValue email = 4;
-  Role role = 5;
+  string uuid = 1;
+  string name = 2;
+  string phone = 3;
+  string email = 4;
 }
 
 message CreateClientRequest {
-  google.protobuf.StringValue name = 1;
-  google.protobuf.StringValue phone = 2;
-  google.protobuf.StringValue email = 3;
+  string name = 1;
+  string phone = 2;
+  string email = 3;
 }
 
 message CreateClientResponse {
@@ -32,7 +31,7 @@ message CreateClientResponse {
 }
 
 message GetClientRequest {
-  int64 id = 1;
+  string uuid = 1;
 }
 
 message GetClientResponse {

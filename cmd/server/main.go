@@ -6,19 +6,26 @@ import (
 	"github.com/SigmarWater/crm/internal/interceptor"
 	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
 	uuid2 "github.com/google/uuid"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
-const grpcPort = 50051
+const (
+	grpcPort = 50051
+	httpPort = 8081
+)
 
 type crmService struct {
 	crmV1.UnimplementedCRMServiceServer
@@ -101,11 +108,69 @@ func main() {
 		}
 	}()
 
+	var gwServer *http.Server
+	go func() {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Создаем мультиплексор для HTTP запросов
+		mux := runtime.NewServeMux()
+
+		// Настраиваем опции для соединения с gRPC сервером
+		opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+		// Регистрируем gRPC-gateway хендлеры
+		err := crmV1.RegisterCRMServiceHandlerFromEndpoint(
+			ctx,
+			mux,
+			fmt.Sprintf("localhost:%d", grpcPort),
+			opts,
+		)
+
+		if err != nil {
+			log.Printf("Failed to register gateway: %v\n", err)
+			return
+		}
+
+		// Создаем HTTP маршрутизатор
+		httpMux := http.NewServeMux()
+
+		// Регистрируем API эндпоинты
+		httpMux.Handle("/", mux)
+
+		// Создаем HTTP сервер
+		gwServer = &http.Server{
+			Addr:              fmt.Sprintf(":%d", httpPort),
+			Handler:           httpMux,
+			ReadHeaderTimeout: 10 * time.Second,
+		}
+
+		// Запускаем HTTP сервер
+		log.Printf("🌐 HTTP server with gRPC-Gateway listening on %d\n", httpPort)
+		err = gwServer.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			log.Printf("Failed to serve HTTP: %v\n", err)
+			return
+		}
+	}()
+
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutting down gRPC server...")
+
+	// Сначала аккуратно останавливаем HTTP сервер
+	if gwServer != nil {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := gwServer.Shutdown(shutdownCtx); err != nil {
+			log.Printf("HTTP server shutdown error: %v", err)
+		}
+		log.Println("✅ HTTP server stopped")
+	}
+
+	// В конце останавливаем gRPC сервер
 	server.GracefulStop()
-	log.Println("Server stopped")
+	log.Println("✅ gRPC server stopped")
 }

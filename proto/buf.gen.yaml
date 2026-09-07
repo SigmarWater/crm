@@ -25,6 +25,11 @@ plugins:
     opt:
       - paths=source_relative
       - lang=go
+
+  - local: ../bin/protoc-gen-grpc-gateway
+    out: ../pkg
+    opt:
+      - paths=source_relative
 inputs:
   # путь для плагинов до наших protobuf файлов относительно расположения buf.gen.yaml
 

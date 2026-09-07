@@ -5,9 +5,20 @@ package crm.proto.api.crm_service;
 option go_package = "crm/pkg/api/crm_service";
 
 import "api/crm_service/crm_messages.proto";
+import "google/api/annotations.proto";
 
 service CRMService {
-  rpc CreateClient(CreateClientRequest) returns (CreateClientResponse);
-  rpc GetClient(GetClientRequest) returns (GetClientResponse);
+  rpc CreateClient(CreateClientRequest) returns (CreateClientResponse){
+    option (google.api.http) = {
+      post: "/crm/v1/client"
+      body: "*"
+    };
+  };
+
+  rpc GetClient(GetClientRequest) returns (GetClientResponse){
+      option (google.api.http) = {
+          get: "/crm/v1/client/{uuid}"
+      };
+  };
 }
 

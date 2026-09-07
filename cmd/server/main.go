@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/SigmarWater/crm/internal/interceptor"
 	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
 	uuid2 "github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -76,7 +77,9 @@ func main() {
 		}
 	}()
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.LoggerInterceptor()),
+	)
 
 	service := &crmService{
 		clients: make(map[string]*crmV1.Client),

@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
+	"log"
+
 	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
 	"github.com/brianvoe/gofakeit/v7"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 const serverAddress = "localhost:50051"
@@ -46,7 +47,6 @@ func main() {
 		serverAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-
 	if err != nil {
 		log.Printf("failed to connect: %v\n", err)
 		return
@@ -54,7 +54,6 @@ func main() {
 
 	defer func() {
 		if closeErr := conn.Close(); closeErr != nil {
-
 			log.Printf("failed to close connect: %v", closeErr)
 		}
 	}()

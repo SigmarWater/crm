@@ -2,7 +2,17 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/SigmarWater/crm/internal/interceptor"
 	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
 	uuid2 "github.com/google/uuid"
@@ -12,14 +22,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"log"
-	"net"
-	"net/http"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
 )
 
 const (
@@ -60,7 +62,7 @@ func (c *crmService) GetClient(_ context.Context, req *crmV1.GetClientRequest) (
 	uuid := req.GetUuid()
 
 	c.mu.RLock()
-	c.mu.RUnlock()
+	defer c.mu.RUnlock()
 	clientInfo, ok := c.clients[uuid]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "client with UUID %s not found", req.GetUuid())
@@ -126,7 +128,6 @@ func main() {
 			fmt.Sprintf("localhost:%d", grpcPort),
 			opts,
 		)
-
 		if err != nil {
 			log.Printf("Failed to register gateway: %v\n", err)
 			return
@@ -159,7 +160,7 @@ func main() {
 		// Запускаем HTTP сервер
 		log.Printf("HTTP server with gRPC-Gateway listening on %d\n", httpPort)
 		err = gwServer.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("Failed to serve HTTP: %v\n", err)
 			return
 		}

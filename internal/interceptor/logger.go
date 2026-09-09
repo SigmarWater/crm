@@ -2,11 +2,12 @@ package interceptor
 
 import (
 	"context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
 	"log"
 	"path"
 	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 func LoggerInterceptor() grpc.UnaryServerInterceptor {
@@ -16,7 +17,6 @@ func LoggerInterceptor() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (resp any, err error) {
-
 		// Извлекаем имя метода из полного пути
 		method := path.Base(info.FullMethod)
 

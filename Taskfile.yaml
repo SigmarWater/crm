@@ -42,17 +42,6 @@ tasks:
       - test -x {{.GOFUMPT}}
       - test -x {{.GCI}}
 
-#  format:
-#    desc: "Форматирует весь проект gofumpt + gci"
-#    deps: [ install-formatters ]
-#    cmds:
-#      - |
-#        echo "Форматируем через gofumpt ..."
-#        find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GOFUMPT}} -extra -w {} +
-#      - |
-#        echo "Сортируем импорты через gci ..."
-#        find . -type f -name '*.go' ! -path '*/mocks/*' -exec {{.GCI}} write -- -s standard -s default -s "prefix(github.com/SigmarWater/messenger/)" {} +
-
   format:
     desc: "Форматирует весь проект gofumpt + gci"
     deps: [ install-formatters ]
@@ -151,7 +140,6 @@ tasks:
         echo "Проверяем .proto файлы..."
         ../bin/buf.exe lint
 
-  
 
   proto:gen-code:
     deps: [ install-buf, proto:update-deps, proto:install-plugins]

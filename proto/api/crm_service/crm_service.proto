@@ -27,7 +27,7 @@ service CRMService {
 
   rpc UpdateClient(UpdateClientRequest) returns (UpdateClientResponse){
     option (google.api.http) = {
-      put: "/crm/v1/clients/{uuid}",
+      patch: "/crm/v1/clients/{uuid}",
       body: "*"
     };
   };

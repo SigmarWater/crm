@@ -6,13 +6,14 @@ option go_package = "crm/pkg/api/crm_service";
 
 import "api/crm_service/crm_messages.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 // CRMService предоставляет API для работы с клиентами.
 service CRMService {
   // Создаёт нового клиента.
   rpc CreateClient(CreateClientRequest) returns (CreateClientResponse){
     option (google.api.http) = {
-      post: "/crm/v1/client"
+      post: "/crm/v1/clients"
       body: "*"
     };
   };
@@ -20,8 +21,28 @@ service CRMService {
   // Получает клиента по UUID.
   rpc GetClient(GetClientRequest) returns (GetClientResponse){
       option (google.api.http) = {
-          get: "/crm/v1/client/{uuid}"
+          get: "/crm/v1/clients/{uuid}"
       };
   };
-}
+
+  rpc UpdateClient(UpdateClientRequest) returns (UpdateClientResponse){
+    option (google.api.http) = {
+      put: "/crm/v1/clients/{uuid}",
+      body: "*"
+    };
+  };
+
+  rpc DeleteClient(DeleteClientRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/crm/v1/clients/{uuid}",
+    };
+  };
+
+  rpc ListClients(ListClientsRequest) returns (ListClientsResponse){
+    option (google.api.http) = {
+      get: "/crm/v1/clients"
+    };
+  };
+
+};
 

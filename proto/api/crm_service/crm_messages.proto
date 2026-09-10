@@ -7,12 +7,6 @@ option go_package = "crm/pkg/api/crm_service";
 import "google/protobuf/wrappers.proto";
 import "validate/validate.proto";
 
-enum Role {
-  ROLE_UNSPECIFIED = 0;
-  ROLE_USER = 1;
-  ROLE_ADMIN = 2;
-}
-
 // Клиент CRM-системы.
 message Client {
   // Уникальный идентификатор клиента
@@ -38,6 +32,8 @@ message Client {
     }
   ];
 }
+
+
 // Запрос на создание клиента
 message CreateClientRequest {
   // Имя клиента
@@ -66,6 +62,7 @@ message CreateClientResponse {
     (validate.rules).message.required = true
   ];
 }
+
 // Запрос на получение клиента
 message GetClientRequest {
   // UUID клиента
@@ -73,10 +70,50 @@ message GetClientRequest {
     (validate.rules).string.uuid = true
   ];
 }
+
 // Ответ с информацией о клиенте
 message GetClientResponse {
   // Найденный клиент
   Client client = 1 [
     (validate.rules).message.required = true
+  ];
+}
+
+message UpdateClientRequest{
+  // UUID клиента
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
+  ];
+  // Имя клиента
+  string name = 2 [
+    (validate.rules).string = {
+      min_len: 2
+      max_len: 100
+    }
+  ];
+  // Номер телефона клиента
+  string phone = 3 [
+    (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
+  ];
+  // Email клиента
+  string email = 4 [
+    (validate.rules).string = {
+      email: true
+      max_len: 255
+    }
+  ];
+}
+
+message UpdateClientResponse{
+  // Обновленный клиент
+  Client client = 1 [
+    (validate.rules).message.required = true
+  ];
+}
+
+message DeleteClientRequest{
+  // Уникальный идентификатор клиента
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
   ];
 }

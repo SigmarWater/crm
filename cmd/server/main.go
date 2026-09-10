@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/SigmarWater/crm/internal/interceptor"
-	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
+	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	uuid2 "github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

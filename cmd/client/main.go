@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
-	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
+	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -15,7 +16,7 @@ const serverAddress = "localhost:50051"
 func createClient(ctx context.Context, client crmV1.CRMServiceClient) (*crmV1.Client, error) {
 	clientInfo := &crmV1.CreateClientRequest{
 		Name:  gofakeit.Name(),
-		Phone: gofakeit.Phone(),
+		Phone: fmt.Sprintf("+%s", gofakeit.Phone()),
 		Email: gofakeit.Email(),
 	}
 

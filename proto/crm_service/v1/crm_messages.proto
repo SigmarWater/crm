@@ -1,10 +1,9 @@
 syntax = "proto3";
 
-package crm.proto.api.crm_service;
+package crm_service.v1;
 
 option go_package = "crm/pkg/api/crm_service";
 
-import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
 
@@ -84,6 +83,7 @@ message GetClientResponse {
   ];
 }
 
+// Запрос на частичное обновление клиента.
 message UpdateClientRequest{
   // UUID клиента
   string uuid = 1 [
@@ -109,6 +109,7 @@ message UpdateClientRequest{
   ];
 }
 
+// Ответ на обновление клиента.
 message UpdateClientResponse{
   // Обновленный клиент
   Client client = 1 [
@@ -116,6 +117,7 @@ message UpdateClientResponse{
   ];
 }
 
+// Запрос на удаление клиента.
 message DeleteClientRequest{
   // Уникальный идентификатор клиента
   string uuid = 1 [
@@ -123,6 +125,7 @@ message DeleteClientRequest{
   ];
 }
 
+// Запрос на получение списка клиентов.
 message ListClientsRequest {
   int32 page_size = 1;
   string page_token = 2;
@@ -133,6 +136,7 @@ message ListClientsRequest {
   string sort_order = 5;
 }
 
+// Ответ со списком клиентов.
 message ListClientsResponse {
   repeated Client clients = 1;
 

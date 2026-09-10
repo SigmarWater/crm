@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package crm.proto.api.crm_service;
+package crm_service.v1;
 
 option go_package = "crm/pkg/api/crm_service";
 
-import "api/crm_service/crm_messages.proto";
+import "crm_service/v1/crm_messages.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
@@ -43,6 +43,5 @@ service CRMService {
       get: "/crm/v1/clients"
     };
   };
-
 };
 

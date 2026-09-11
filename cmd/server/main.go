@@ -110,6 +110,44 @@ func (c *crmService) GetClient(
 	}, nil
 }
 
+// UpdateClient частично обновляет клиента.
+func (c *crmService) UpdateClient(
+	ctx context.Context,
+	req *crmV1.UpdateClientRequest,
+) (*crmV1.UpdateClientResponse, error) {
+	clientUUID := req.GetUuid()
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	client, ok := c.clients[clientUUID]
+	if !ok {
+		return nil, status.Errorf(
+			codes.NotFound,
+			"client with UUID %s not found",
+			clientUUID,
+		)
+	}
+
+	if req.Name != nil {
+		client.Name = req.GetName()
+	}
+
+	if req.Phone != nil {
+		client.Phone = req.GetPhone()
+	}
+
+	if req.Email != nil {
+		client.Email = req.GetEmail()
+	}
+
+	client.UpdatedAt = timestamppb.Now()
+
+	return &crmV1.UpdateClientResponse{
+		Client: cloneClient(client),
+	}, nil
+}
+
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {

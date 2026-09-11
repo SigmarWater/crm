@@ -17,59 +17,6 @@
   ],
   "paths": {
     "/crm/v1/clients": {
-      "get": {
-        "operationId": "CRMService_ListClients",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ListClientsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "pageSize",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "pageToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "sortOrder",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "CRMService"
-        ]
-      },
       "post": {
         "summary": "Создаёт нового клиента.",
         "operationId": "CRMService_CreateClient",
@@ -316,22 +263,6 @@
         }
       },
       "title": "Ответ с информацией о клиенте"
-    },
-    "v1ListClientsResponse": {
-      "type": "object",
-      "properties": {
-        "clients": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1Client"
-          }
-        },
-        "nextPageToken": {
-          "type": "string"
-        }
-      },
-      "description": "Ответ со списком клиентов."
     },
     "v1UpdateClientResponse": {
       "type": "object",

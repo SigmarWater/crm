@@ -37,11 +37,5 @@ service CRMService {
       delete: "/crm/v1/clients/{uuid}",
     };
   };
-
-  rpc ListClients(ListClientsRequest) returns (ListClientsResponse){
-    option (google.api.http) = {
-      get: "/crm/v1/clients"
-    };
-  };
 };
 

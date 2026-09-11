@@ -124,21 +124,3 @@ message DeleteClientRequest{
     (validate.rules).string.uuid = true
   ];
 }
-
-// Запрос на получение списка клиентов.
-message ListClientsRequest {
-  int32 page_size = 1;
-  string page_token = 2;
-
-  string search = 3;
-
-  string sort_by = 4;
-  string sort_order = 5;
-}
-
-// Ответ со списком клиентов.
-message ListClientsResponse {
-  repeated Client clients = 1;
-
-  string next_page_token = 2;
-}

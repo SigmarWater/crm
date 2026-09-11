@@ -65,6 +65,19 @@ func updateClient(
 	return response.Client, nil
 }
 
+func deleteClient(
+	ctx context.Context,
+	client crmV1.CRMServiceClient,
+	uuid string,
+) error {
+	request := &crmV1.DeleteClientRequest{
+		Uuid: uuid,
+	}
+
+	_, err := client.DeleteClient(ctx, request)
+	return err
+}
+
 func main() {
 	ctx := context.Background()
 
@@ -125,6 +138,18 @@ func main() {
 
 	log.Printf("Обновлён клиент: UUID=%s", updatedClient.Uuid)
 	log.Printf("%v\n", updatedClient)
+
+	// 4. Удаляем клиента
+	log.Println("Удаление клиента")
+	log.Println("==================================")
+
+	err = deleteClient(ctx, client, clientInfo.Uuid)
+	if err != nil {
+		log.Printf("Ошибка при удалении клиента: %v\n", err)
+		return
+	}
+
+	log.Printf("Клиент удалён: UUID=%s\n", clientInfo.Uuid)
 
 	log.Println("Тестирование завершено!")
 }

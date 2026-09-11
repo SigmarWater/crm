@@ -2,4 +2,5 @@
 
 echo "Running pre-commit checks..."
 
+task format
 task lint

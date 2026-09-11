@@ -949,7 +949,6 @@ func (m *UpdateClientRequest) validate(all bool) error {
 	}
 
 	if m.Name != nil {
-
 		if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 100 {
 			err := UpdateClientRequestValidationError{
 				field:  "Name",
@@ -960,11 +959,9 @@ func (m *UpdateClientRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-
 	}
 
 	if m.Phone != nil {
-
 		if !_UpdateClientRequest_Phone_Pattern.MatchString(m.GetPhone()) {
 			err := UpdateClientRequestValidationError{
 				field:  "Phone",
@@ -975,7 +972,6 @@ func (m *UpdateClientRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-
 	}
 
 	if m.Email != nil {

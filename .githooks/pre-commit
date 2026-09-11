@@ -1,3 +1,5 @@
 #!/bin/sh
 
-echo "Running pre-commit hook..."
+echo "Running pre-commit checks..."
+
+task lint

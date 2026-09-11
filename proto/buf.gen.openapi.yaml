@@ -8,7 +8,9 @@ plugins:
       - merge_file_name=crm
       - json_names_for_fields=true
 
+# path внутри inputs — это фильтр:
+# какие именно .proto файлы из указанной директории использовать как вход генерации.
 inputs:
   - directory: .
     paths:
-      - api/crm_service/crm_service.proto
+      - crm_service/v1/crm_service.proto

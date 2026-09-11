@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "api/crm_service/crm_service.proto",
+    "title": "crm_service/v1/crm_service.proto",
     "version": "version not set"
   },
   "tags": [
@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/crm/v1/client": {
+    "/crm/v1/clients": {
       "post": {
         "summary": "Создаёт нового клиента.",
         "operationId": "CRMService_CreateClient",
@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/crm_serviceCreateClientResponse"
+              "$ref": "#/definitions/v1CreateClientResponse"
             }
           },
           "default": {
@@ -40,7 +40,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/crm_serviceCreateClientRequest"
+              "$ref": "#/definitions/v1CreateClientRequest"
             }
           }
         ],
@@ -49,7 +49,7 @@
         ]
       }
     },
-    "/crm/v1/client/{uuid}": {
+    "/crm/v1/clients/{uuid}": {
       "get": {
         "summary": "Получает клиента по UUID.",
         "operationId": "CRMService_GetClient",
@@ -57,7 +57,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/crm_serviceGetClientResponse"
+              "$ref": "#/definitions/v1GetClientResponse"
             }
           },
           "default": {
@@ -79,33 +79,78 @@
         "tags": [
           "CRMService"
         ]
+      },
+      "delete": {
+        "operationId": "CRMService_DeleteClient",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uuid",
+            "description": "Уникальный идентификатор клиента",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CRMService"
+        ]
+      },
+      "patch": {
+        "operationId": "CRMService_UpdateClient",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateClientResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uuid",
+            "description": "UUID клиента",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CRMServiceUpdateClientBody"
+            }
+          }
+        ],
+        "tags": [
+          "CRMService"
+        ]
       }
     }
   },
   "definitions": {
-    "crm_serviceClient": {
-      "type": "object",
-      "properties": {
-        "uuid": {
-          "type": "string",
-          "title": "Уникальный идентификатор клиента"
-        },
-        "name": {
-          "type": "string",
-          "title": "Имя клиента"
-        },
-        "phone": {
-          "type": "string",
-          "title": "Номер телефона клиента"
-        },
-        "email": {
-          "type": "string",
-          "title": "Email клиента"
-        }
-      },
-      "description": "Клиент CRM-системы."
-    },
-    "crm_serviceCreateClientRequest": {
+    "CRMServiceUpdateClientBody": {
       "type": "object",
       "properties": {
         "name": {
@@ -121,27 +166,7 @@
           "title": "Email клиента"
         }
       },
-      "title": "Запрос на создание клиента"
-    },
-    "crm_serviceCreateClientResponse": {
-      "type": "object",
-      "properties": {
-        "client": {
-          "$ref": "#/definitions/crm_serviceClient",
-          "title": "Созданный клиент"
-        }
-      },
-      "title": "Ответ на создание клиента"
-    },
-    "crm_serviceGetClientResponse": {
-      "type": "object",
-      "properties": {
-        "client": {
-          "$ref": "#/definitions/crm_serviceClient",
-          "title": "Найденный клиент"
-        }
-      },
-      "title": "Ответ с информацией о клиенте"
+      "description": "Запрос на частичное обновление клиента."
     },
     "protobufAny": {
       "type": "object",
@@ -170,6 +195,84 @@
           }
         }
       }
+    },
+    "v1Client": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "title": "Уникальный идентификатор клиента"
+        },
+        "name": {
+          "type": "string",
+          "title": "Имя клиента"
+        },
+        "phone": {
+          "type": "string",
+          "title": "Номер телефона клиента"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email клиента"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Клиент CRM-системы."
+    },
+    "v1CreateClientRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Имя клиента"
+        },
+        "phone": {
+          "type": "string",
+          "title": "Номер телефона клиента"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email клиента"
+        }
+      },
+      "title": "Запрос на создание клиента"
+    },
+    "v1CreateClientResponse": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "$ref": "#/definitions/v1Client",
+          "title": "Созданный клиент"
+        }
+      },
+      "title": "Ответ на создание клиента"
+    },
+    "v1GetClientResponse": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "$ref": "#/definitions/v1Client",
+          "title": "Найденный клиент"
+        }
+      },
+      "title": "Ответ с информацией о клиенте"
+    },
+    "v1UpdateClientResponse": {
+      "type": "object",
+      "properties": {
+        "client": {
+          "$ref": "#/definitions/v1Client",
+          "title": "Обновленный клиент"
+        }
+      },
+      "description": "Ответ на обновление клиента."
     }
   }
 }

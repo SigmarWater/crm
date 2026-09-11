@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/SigmarWater/crm/internal/interceptor"
-	crmV1 "github.com/SigmarWater/crm/pkg/api/crm_service"
+	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	uuid2 "github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -22,6 +22,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -35,42 +37,141 @@ type crmService struct {
 	clients map[string]*crmV1.Client
 }
 
-// Добавление клиента
-func (c *crmService) CreateClient(_ context.Context, req *crmV1.CreateClientRequest) (*crmV1.CreateClientResponse, error) {
+// cloneClient возвращает независимую копию клиента.
+//
+// Это важно, поскольку внутри map мы храним *Client.
+// Нельзя отдавать этот pointer наружу.
+func cloneClient(client *crmV1.Client) *crmV1.Client {
+	if client == nil {
+		return nil
+	}
+
+	return &crmV1.Client{
+		Uuid:      client.GetUuid(),
+		Name:      client.GetName(),
+		Phone:     client.GetPhone(),
+		Email:     client.GetEmail(),
+		CreatedAt: client.GetCreatedAt(),
+		UpdatedAt: client.GetUpdatedAt(),
+	}
+}
+
+// CreateClient создаёт нового клиента.
+func (c *crmService) CreateClient(
+	ctx context.Context,
+	req *crmV1.CreateClientRequest,
+) (*crmV1.CreateClientResponse, error) {
+	now := timestamppb.Now()
 	newUUID := uuid2.NewString()
 
 	client := &crmV1.Client{
-		Uuid:  newUUID,
-		Name:  req.GetName(),
-		Phone: req.GetPhone(),
-		Email: req.GetEmail(),
+		Uuid:      newUUID,
+		Name:      req.GetName(),
+		Phone:     req.GetPhone(),
+		Email:     req.GetEmail(),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	c.mu.Lock()
 	c.clients[newUUID] = client
 	c.mu.Unlock()
 
-	log.Printf("Создан клиент с UUID %s\n", newUUID)
+	log.Printf("создан клиент с UUID %s", newUUID)
 
 	return &crmV1.CreateClientResponse{
+		Client: cloneClient(client),
+	}, nil
+}
+
+// GetClient получает клиента по UUID.
+func (c *crmService) GetClient(
+	ctx context.Context,
+	req *crmV1.GetClientRequest,
+) (*crmV1.GetClientResponse, error) {
+	clientUUID := req.GetUuid()
+
+	c.mu.RLock()
+	client, ok := c.clients[clientUUID]
+	if ok {
+		client = cloneClient(client)
+	}
+	c.mu.RUnlock()
+
+	if !ok {
+		return nil, status.Errorf(
+			codes.NotFound,
+			"client with UUID %s not found",
+			clientUUID,
+		)
+	}
+
+	return &crmV1.GetClientResponse{
 		Client: client,
 	}, nil
 }
 
-// Получение информации о клиенте
-func (c *crmService) GetClient(_ context.Context, req *crmV1.GetClientRequest) (*crmV1.GetClientResponse, error) {
-	uuid := req.GetUuid()
+// UpdateClient частично обновляет клиента.
+func (c *crmService) UpdateClient(
+	ctx context.Context,
+	req *crmV1.UpdateClientRequest,
+) (*crmV1.UpdateClientResponse, error) {
+	clientUUID := req.GetUuid()
 
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	clientInfo, ok := c.clients[uuid]
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	client, ok := c.clients[clientUUID]
 	if !ok {
-		return nil, status.Errorf(codes.NotFound, "client with UUID %s not found", req.GetUuid())
+		return nil, status.Errorf(
+			codes.NotFound,
+			"client with UUID %s not found",
+			clientUUID,
+		)
 	}
 
-	return &crmV1.GetClientResponse{
-		Client: clientInfo,
+	if req.Name != nil {
+		client.Name = req.GetName()
+	}
+
+	if req.Phone != nil {
+		client.Phone = req.GetPhone()
+	}
+
+	if req.Email != nil {
+		client.Email = req.GetEmail()
+	}
+
+	client.UpdatedAt = timestamppb.Now()
+
+	return &crmV1.UpdateClientResponse{
+		Client: cloneClient(client),
 	}, nil
+}
+
+// DeleteClient удаляет клиента.
+func (c *crmService) DeleteClient(
+	ctx context.Context,
+	req *crmV1.DeleteClientRequest,
+) (*emptypb.Empty, error) {
+	clientUUID := req.GetUuid()
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if _, ok := c.clients[clientUUID]; !ok {
+		return nil, status.Errorf(
+			codes.NotFound,
+			"client with UUID %s not found",
+			clientUUID,
+		)
+	}
+
+	delete(c.clients, clientUUID)
+
+	log.Printf("удалён клиент с UUID %s", clientUUID)
+
+	return &emptypb.Empty{}, nil
 }
 
 func main() {

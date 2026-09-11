@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+
 	repoError "github.com/SigmarWater/crm/internal/model"
 )
 

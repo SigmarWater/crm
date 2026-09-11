@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 
-	repoError "github.com/SigmarWater/crm/internal/model"
+	"github.com/SigmarWater/crm/internal/errors"
 	repoModel "github.com/SigmarWater/crm/internal/repository/model"
 )
 
@@ -13,7 +13,7 @@ func (r *repository) Get(_ context.Context, uuid string) (*repoModel.Client, err
 	r.mu.RUnlock()
 
 	if !ok {
-		return nil, repoError.ErrClientNotFound
+		return nil, errors.ErrClientNotFound
 	}
 
 	return &repoModel.Client{

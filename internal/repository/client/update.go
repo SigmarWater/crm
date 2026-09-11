@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	repoError "github.com/SigmarWater/crm/internal/model"
+	"github.com/SigmarWater/crm/internal/errors"
 	repoModel "github.com/SigmarWater/crm/internal/repository/model"
 )
 
@@ -15,7 +15,7 @@ func (r *repository) Update(_ context.Context, uuid string, updateInfo *repoMode
 	client, ok := r.storage[uuid]
 
 	if !ok {
-		return nil, repoError.ErrClientNotFound
+		return nil, errors.ErrClientNotFound
 	}
 
 	if name := updateInfo.Name; name != nil {

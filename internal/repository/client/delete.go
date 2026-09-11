@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 
-	repoError "github.com/SigmarWater/crm/internal/model"
+	"github.com/SigmarWater/crm/internal/errors"
 )
 
 func (r *repository) Delete(_ context.Context, uuid string) error {
@@ -11,7 +11,7 @@ func (r *repository) Delete(_ context.Context, uuid string) error {
 	defer r.mu.Unlock()
 
 	if _, ok := r.storage[uuid]; !ok {
-		return repoError.ErrClientNotFound
+		return errors.ErrClientNotFound
 	}
 
 	delete(r.storage, uuid)

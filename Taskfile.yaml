@@ -2,8 +2,15 @@ version: '3'
 
 shopt: [globstar]
 
+dotenv:
+  - ./.env
+
+
 # Глобальные переменные проекта
 vars:
+
+  VPS_HOST: '{{.VPS_HOST}}'
+  VPS_USER: '{{.VPS_USER}}'
   GO_VERSION: '1.27.1'
   GOLANGCI_LINT_VERSION: 'v2.13.2'
   GCI_VERSION: 'v0.14.0'
@@ -203,3 +210,20 @@ tasks:
       - |
         echo "Запускаем клиент..."
         go run ./cmd/client/main.go
+
+
+  docker:up:
+    desc: "Запустить Docker Compose на VPS"
+    cmds:
+      - ssh {{.VPS_USER}}@{{.VPS_HOST}} "mkdir -p /opt/crm-dev"
+
+      - scp deploy/compose/client/docker-compose.yml {{.VPS_USER}}@{{.VPS_HOST}}:/opt/crm-dev/docker-compose.yml
+
+      - scp deploy/env/.env {{.VPS_USER}}@{{.VPS_HOST}}:/opt/crm-dev/.env
+
+      - ssh {{.VPS_USER}}@{{.VPS_HOST}} "cd /opt/crm-dev && docker compose --env-file .env up -d"
+
+  docker:down:
+    desc: "Остановить Docker Compose на VPS"
+    cmds:
+      - ssh {{.VPS_USER}}@{{.VPS_HOST}} "cd /opt/crm-dev && docker compose down"

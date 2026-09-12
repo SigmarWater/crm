@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -14,10 +15,14 @@ import (
 
 	clientV1API "github.com/SigmarWater/crm/internal/api/crm/v1"
 	"github.com/SigmarWater/crm/internal/interceptor"
+	"github.com/SigmarWater/crm/internal/migrator"
 	clientRepository "github.com/SigmarWater/crm/internal/repository/client"
 	clientService "github.com/SigmarWater/crm/internal/service/client"
 	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -29,9 +34,65 @@ const (
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("failed to load .env: %v\n", err)
+		return
+	}
+
+	dbURI := os.Getenv("DB_URI")
+	if dbURI == "" {
+		log.Println("DB_URI is not set")
+		return
+	}
+
+	pool, err := pgxpool.New(ctx, dbURI)
+	if err != nil {
+		log.Printf("failed to connect to database: %v\n", err)
+		return
+	}
+
+	defer pool.Close()
+
+	if err := pool.Ping(ctx); err != nil {
+		log.Printf("failed to ping database: %v\n", err)
+		return
+	}
+
+	sqlDB, err := sql.Open("pgx", dbURI)
+	if err != nil {
+		log.Printf("failed to open database for migrations: %v\n", err)
+		return
+	}
+
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			log.Printf("failed to close database connection: %v", err)
+		}
+	}()
+
+	migrationsDir := os.Getenv("MIGRATIONS_DIR")
+	if migrationsDir == "" {
+		log.Println("MIGRATIONS_DIR is not set")
+		return
+	}
+
+	migratorRunner := migrator.NewMigrator(sqlDB, migrationsDir)
+	if err := migratorRunner.Up(); err != nil {
+		log.Printf("failed to run migrations: %v\n", err)
+		return
+	}
+
+	repo := clientRepository.NewRepository(pool)
+	service := clientService.NewClientService(repo)
+	api := clientV1API.NewAPI(service)
+
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Printf("failed to listen: %v\n", err)
+		return
 	}
 
 	defer func() {
@@ -47,10 +108,6 @@ func main() {
 		),
 	)
 
-	repo := clientRepository.NewRepository()
-	service := clientService.NewClientService(repo)
-	api := clientV1API.NewAPI(service)
-
 	crmV1.RegisterCRMServiceServer(server, api)
 
 	reflection.Register(server)
@@ -59,13 +116,10 @@ func main() {
 		log.Printf("gRPC server listening on %d\n", grpcPort)
 
 		if err := server.Serve(lis); err != nil {
-			log.Printf("failed to serve: %v", err)
+			log.Printf("failed to serve: %v\n", err)
 			return
 		}
 	}()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	// Создаем мультиплексор для HTTP запросов
 	mux := runtime.NewServeMux()
@@ -125,8 +179,9 @@ func main() {
 	log.Println("Starting graceful shutdown...")
 
 	// Сначала аккуратно останавливаем HTTP сервер
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
+
 	if err := gwServer.Shutdown(shutdownCtx); err != nil {
 		log.Printf("HTTP server shutdown error: %v", err)
 	}

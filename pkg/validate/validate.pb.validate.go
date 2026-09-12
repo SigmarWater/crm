@@ -1016,7 +1016,8 @@ func (e FieldRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = FieldRulesValidationError{}
@@ -1127,7 +1128,8 @@ func (e FloatRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = FloatRulesValidationError{}
@@ -1238,7 +1240,8 @@ func (e DoubleRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = DoubleRulesValidationError{}
@@ -1349,7 +1352,8 @@ func (e Int32RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = Int32RulesValidationError{}
@@ -1460,7 +1464,8 @@ func (e Int64RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = Int64RulesValidationError{}
@@ -1571,7 +1576,8 @@ func (e UInt32RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = UInt32RulesValidationError{}
@@ -1682,7 +1688,8 @@ func (e UInt64RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = UInt64RulesValidationError{}
@@ -1793,7 +1800,8 @@ func (e SInt32RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = SInt32RulesValidationError{}
@@ -1904,7 +1912,8 @@ func (e SInt64RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = SInt64RulesValidationError{}
@@ -2015,7 +2024,8 @@ func (e Fixed32RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = Fixed32RulesValidationError{}
@@ -2126,7 +2136,8 @@ func (e Fixed64RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = Fixed64RulesValidationError{}
@@ -2238,7 +2249,8 @@ func (e SFixed32RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = SFixed32RulesValidationError{}
@@ -2350,7 +2362,8 @@ func (e SFixed64RulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = SFixed64RulesValidationError{}
@@ -2451,7 +2464,8 @@ func (e BoolRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = BoolRulesValidationError{}
@@ -2703,7 +2717,8 @@ func (e StringRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = StringRulesValidationError{}
@@ -2861,7 +2876,8 @@ func (e BytesRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = BytesRulesValidationError{}
@@ -2964,7 +2980,8 @@ func (e EnumRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = EnumRulesValidationError{}
@@ -3067,7 +3084,8 @@ func (e MessageRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = MessageRulesValidationError{}
@@ -3204,7 +3222,8 @@ func (e RepeatedRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = RepeatedRulesValidationError{}
@@ -3369,7 +3388,8 @@ func (e MapRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = MapRulesValidationError{}
@@ -3470,7 +3490,8 @@ func (e AnyRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = AnyRulesValidationError{}
@@ -3785,7 +3806,8 @@ func (e DurationRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = DurationRulesValidationError{}
@@ -4065,7 +4087,8 @@ func (e TimestampRulesValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = TimestampRulesValidationError{}

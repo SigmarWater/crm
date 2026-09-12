@@ -156,7 +156,8 @@ func (e HttpValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = HttpValidationError{}
@@ -401,7 +402,8 @@ func (e HttpRuleValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = HttpRuleValidationError{}
@@ -507,7 +509,8 @@ func (e CustomHttpPatternValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CustomHttpPatternValidationError{}

@@ -296,7 +296,8 @@ func (e ClientValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = ClientValidationError{}
@@ -495,7 +496,8 @@ func (e CreateClientRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CreateClientRequestValidationError{}
@@ -639,7 +641,8 @@ func (e CreateClientResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CreateClientResponseValidationError{}
@@ -759,7 +762,8 @@ func (e GetClientRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = GetClientRequestValidationError{}
@@ -901,7 +905,8 @@ func (e GetClientResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = GetClientResponseValidationError{}
@@ -1126,7 +1131,8 @@ func (e UpdateClientRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = UpdateClientRequestValidationError{}
@@ -1270,7 +1276,8 @@ func (e UpdateClientResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = UpdateClientResponseValidationError{}
@@ -1392,7 +1399,8 @@ func (e DeleteClientRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = DeleteClientRequestValidationError{}

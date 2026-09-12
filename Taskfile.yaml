@@ -14,6 +14,7 @@ vars:
   PROTOC_GEN_VALIDATE_VERSION: 'v1.2.1'
   PROTOC_GEN_GRPC_GATEWAY_VERSION: 'v2.26.3'
   PROTOC_GEN_OPENAPIV2_VERSION: 'v2.26.3'
+  GOOSE_VERSTION: 'v3.28.0'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint.exe'
@@ -25,6 +26,7 @@ vars:
   PROTOC_GEN_VALIDATE: '{{.BIN_DIR}}/protoc-gen-validate'
   PROTOC_GEN_GRPC_GATEWAY: '{{.BIN_DIR}}/protoc-gen-grpc-gateway'
   PROTOC_GEN_OPENAPIV2: '{{.BIN_DIR}}/protoc-gen-openapiv2'
+  GOOSE_VERSION: '{{.BIN_DIR}}/goose'
 
 tasks:
   install-formatters:
@@ -143,6 +145,30 @@ tasks:
         echo "Проверяем .proto файлы..."
         ../bin/buf.exe lint
 
+  install-goose:
+    desc: "Устанавливает goose в ./bin"
+    cmds:
+      - |
+        [ -f {{.GOFUMPT}} ] || {
+          echo 'Устанавливаем goose {{.GOOSE_VERSION}}...'
+          GOBIN={{.BIN_DIR}} go install github.com/pressly/goose/v3/cmd/goose@{{.GOOSE_VERSION}}
+        }
+    
+  migrations-up:
+    desc: "Накатка миграций"
+    dir: migrations
+    cmds:
+      - |
+        echo "Накатываем миграции..."
+        ../bin/goose.exe goose up 
+
+  migrations-down:
+    desc: "Откат миграций"
+    dir: migrations
+    cmds:
+      - | 
+        echo "Откат миграций..."
+        ../bin/goose.exe goose down
 
   proto:gen-code:
     deps: [proto:lint]

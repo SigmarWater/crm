@@ -3,11 +3,12 @@ package client
 import (
 	"context"
 	"errors"
+	"log"
+
 	sq "github.com/Masterminds/squirrel"
 	appError "github.com/SigmarWater/crm/internal/errors"
 	repoModel "github.com/SigmarWater/crm/internal/repository/model"
 	"github.com/jackc/pgx/v5"
-	"log"
 )
 
 func (r *repository) Get(

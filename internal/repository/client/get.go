@@ -25,13 +25,13 @@ func (r *repository) Get(
 		From("clients").
 		Where(sq.Eq{"uuid": uuid})
 
-	sql, args, err := selectBuilder.ToSql()
+	query, args, err := selectBuilder.ToSql()
 	if err != nil {
 		log.Printf("failed select query: %v\n", err)
 		return nil, err
 	}
 
-	row := r.pool.QueryRow(ctx, sql, args...)
+	row := r.pool.QueryRow(ctx, query, args...)
 
 	var client repoModel.Client
 

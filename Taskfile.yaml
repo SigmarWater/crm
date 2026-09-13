@@ -21,7 +21,7 @@ vars:
   PROTOC_GEN_VALIDATE_VERSION: 'v1.2.1'
   PROTOC_GEN_GRPC_GATEWAY_VERSION: 'v2.26.3'
   PROTOC_GEN_OPENAPIV2_VERSION: 'v2.26.3'
-  GOOSE_VERSTION: 'v3.28.0'
+  GOOSE_VERSION: 'v3.28.0'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint.exe'
@@ -33,7 +33,10 @@ vars:
   PROTOC_GEN_VALIDATE: '{{.BIN_DIR}}/protoc-gen-validate'
   PROTOC_GEN_GRPC_GATEWAY: '{{.BIN_DIR}}/protoc-gen-grpc-gateway'
   PROTOC_GEN_OPENAPIV2: '{{.BIN_DIR}}/protoc-gen-openapiv2'
-  GOOSE_VERSION: '{{.BIN_DIR}}/goose'
+  GOOSE: '{{.BIN_DIR}}/goose'
+
+  GOOSE_DRIVER: postgres
+  GOOSE_DBSTRING: "{{.DB_URI}}"
 
 tasks:
   install-formatters:
@@ -156,7 +159,7 @@ tasks:
     desc: "Устанавливает goose в ./bin"
     cmds:
       - |
-        [ -f {{.GOFUMPT}} ] || {
+        [ -f {{.GOOSE}} ] || {
           echo 'Устанавливаем goose {{.GOOSE_VERSION}}...'
           GOBIN={{.BIN_DIR}} go install github.com/pressly/goose/v3/cmd/goose@{{.GOOSE_VERSION}}
         }
@@ -175,7 +178,7 @@ tasks:
     cmds:
       - | 
         echo "Откат миграций..."
-        ../bin/goose.exe goose down
+        GOOSE_DRIVER=postgres GOOSE_DBSTRING="{{.DB_URI}}" ../bin/goose.exe down
 
   proto:gen-code:
     deps: [proto:lint]

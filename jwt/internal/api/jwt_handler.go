@@ -3,12 +3,12 @@ package api
 import (
 	"context"
 	"errors"
-	jwtErrors "github.com/SigmarWater/crm/jwt/errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	jwtErrors "github.com/SigmarWater/crm/jwt/errors"
 	"github.com/SigmarWater/crm/jwt/internal/service"
 	jwtv1 "github.com/SigmarWater/crm/jwt/pkg/jwt/v1"
 )

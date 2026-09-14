@@ -111,7 +111,7 @@ tasks:
           case "$file" in
             */mocks/*) continue ;;
           esac
-          "{{.GCI}}" write -s standard -s default -s "prefix(github.com/SigmarWater/messenger/)" "$file"
+          "{{.GCI}}" write -s standard -s default -s "prefix(github.com/SigmarWater/crm/)" "$file"
         done
 
   lint:
@@ -152,15 +152,3 @@ tasks:
       - |
         echo "Генерируем Go код из .proto..."
         ../bin/buf.exe generate --template buf.gen.yaml
-
-  start:server:
-    cmds:
-      - |
-        echo "Запускаем сервер..."
-        go run ./cmd/server/main.go
-
-  start:client:
-    cmds:
-      - |
-        echo "Запускаем клиент..."
-        go run ./cmd/client/main.go

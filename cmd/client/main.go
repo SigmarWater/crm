@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 
-	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 )
 
 const serverAddress = "localhost:50051"

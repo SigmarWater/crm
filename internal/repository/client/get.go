@@ -6,9 +6,10 @@ import (
 	"log"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
+
 	appError "github.com/SigmarWater/crm/internal/errors"
 	repoModel "github.com/SigmarWater/crm/internal/repository/model"
-	"github.com/jackc/pgx/v5"
 )
 
 func (r *repository) Get(

@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/SigmarWater/crm/internal/converter"
 	appError "github.com/SigmarWater/crm/internal/errors"
 	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (a *api) UpdateClient(ctx context.Context, req *crmV1.UpdateClientRequest) (*crmV1.UpdateClientResponse, error) {

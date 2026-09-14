@@ -1,8 +1,9 @@
 package client
 
 import (
-	repo "github.com/SigmarWater/crm/internal/repository"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	repo "github.com/SigmarWater/crm/internal/repository"
 )
 
 var _ repo.ClientRepository = (*repository)(nil)

@@ -128,7 +128,7 @@ tasks:
           case "$file" in
             */mocks/*) continue ;;
           esac
-          "{{.GCI}}" write -s standard -s default -s "prefix(github.com/SigmarWater/messenger/)" "$file"
+          "{{.GCI}}" write -s standard -s default -s "prefix(github.com/SigmarWater/crm/)" "$file"
         done
 
   lint:

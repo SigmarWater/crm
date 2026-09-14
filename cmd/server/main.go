@@ -13,12 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	clientV1API "github.com/SigmarWater/crm/internal/api/crm/v1"
-	"github.com/SigmarWater/crm/internal/interceptor"
-	"github.com/SigmarWater/crm/internal/migrator"
-	clientRepository "github.com/SigmarWater/crm/internal/repository/client"
-	clientService "github.com/SigmarWater/crm/internal/service/client"
-	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -26,6 +20,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
+
+	clientV1API "github.com/SigmarWater/crm/internal/api/crm/v1"
+	"github.com/SigmarWater/crm/internal/interceptor"
+	"github.com/SigmarWater/crm/internal/migrator"
+	clientRepository "github.com/SigmarWater/crm/internal/repository/client"
+	clientService "github.com/SigmarWater/crm/internal/service/client"
+	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 )
 
 const (

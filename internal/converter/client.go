@@ -1,9 +1,10 @@
 package converter
 
 import (
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	serviceModel "github.com/SigmarWater/crm/internal/model"
 	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func CreateClientInfoFromProto(

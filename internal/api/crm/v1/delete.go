@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 
-	appError "github.com/SigmarWater/crm/internal/errors"
-	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+
+	appError "github.com/SigmarWater/crm/internal/errors"
+	crmV1 "github.com/SigmarWater/crm/pkg/crm_service/v1"
 )
 
 func (a *api) DeleteClient(ctx context.Context, req *crmV1.DeleteClientRequest) (*emptypb.Empty, error) {

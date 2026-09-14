@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+
 	repoModel "github.com/SigmarWater/crm/internal/repository/model"
 )
 

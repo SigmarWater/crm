@@ -6,8 +6,9 @@ import (
 	"log"
 
 	sq "github.com/Masterminds/squirrel"
-	appError "github.com/SigmarWater/crm/internal/errors"
 	"github.com/jackc/pgx/v5"
+
+	appError "github.com/SigmarWater/crm/internal/errors"
 )
 
 func (r *repository) Delete(ctx context.Context, uuid string) error {

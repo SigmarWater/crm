@@ -1,12 +1,11 @@
 package service
 
 import (
-	"github.com/SigmarWater/crm/jwt/model"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
-
 	authErrors "github.com/SigmarWater/crm/jwt/errors"
+	"github.com/SigmarWater/crm/jwt/model"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Login - аутентификация пользователя

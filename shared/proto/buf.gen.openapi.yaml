@@ -1,0 +1,16 @@
+version: v2
+
+plugins:
+  - local: ../../bin/protoc-gen-openapiv2
+    out: ./docs/openapi
+    opt:
+      - allow_merge=true
+      - merge_file_name=crm
+      - json_names_for_fields=true
+
+# path внутри inputs — это фильтр:
+# какие именно .proto файлы из указанной директории использовать как вход генерации.
+inputs:
+  - directory: .
+    paths:
+      - customer_service/v1/customer_service.proto

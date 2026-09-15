@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package customer_service.v1;
+
+option go_package = "crm/shared/pkg";
+
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
+// Покупатель CRM-системы.
+message Customer {
+  // Уникальный идентификатор покупателя
+  string uuid = 1;
+  // Имя покупателя
+  string name = 2;
+  // Номер телефона покупателя
+  string phone = 3;
+  // Email покупателя
+  string email = 4;
+
+  // Время создания записи о покупателе
+  google.protobuf.Timestamp created_at = 5;
+
+  // Время обновления данных о покупателе
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+
+// Запрос на создание покупателя
+message CreateCustomerRequest {
+  // Имя покупателя
+  string name = 1 [
+    (validate.rules).string = {
+      min_len: 2
+      max_len: 100
+    }
+  ];
+  // Номер телефона покупателя
+  string phone = 2 [
+    (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
+  ];
+  // Email покупателя
+  string email = 3 [
+    (validate.rules).string = {
+      email: true
+      max_len: 255
+    }
+  ];
+}
+
+// Ответ на создание покупателя
+message CreateCustomerResponse {
+  // Созданный покупателя
+  Customer customer = 1;
+}
+
+// Запрос на получение данных покупателя
+message GetCustomerRequest {
+  // UUID покупателя
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
+  ];
+}
+
+// Ответ с информацией о покупателе
+message GetCustomerResponse {
+  // Найденный покупатель
+  Customer customer = 1;
+}
+
+// Запрос на частичное обновление данных покупателя.
+message UpdateCustomerRequest{
+  // UUID покупателя
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
+  ];
+  // Имя покупателя
+  optional string name = 2 [
+    (validate.rules).string = {
+      min_len: 2
+      max_len: 100
+    }
+  ];
+  // Номер телефона покупателя
+  optional string phone = 3 [
+    (validate.rules).string.pattern = "^\\+[1-9][0-9]{9,14}$"
+  ];
+  // Email покупателя
+  optional string email = 4 [
+    (validate.rules).string = {
+      email: true
+      max_len: 255
+    }
+  ];
+}
+
+// Ответ на обновление покупателя.
+message UpdateCustomerResponse{
+  // Обновленный покупателя
+  Customer customer = 1;
+}
+
+// Запрос на удаление покупателя.
+message DeleteCustomerRequest{
+  // Уникальный идентификатор покупателя
+  string uuid = 1 [
+    (validate.rules).string.uuid = true
+  ];
+}

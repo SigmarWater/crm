@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package customer_service.v1;
+
+option go_package = "crm/shared/pkg";
+
+import "customer_service/v1/customer_messages.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+// CustomerService предоставляет API для работы с покупателями.
+service CustomerService {
+  // Создаёт нового покупателя.
+  rpc CreateCustomer(CreateCustomerRequest) returns (CreateCustomerResponse){
+    option (google.api.http) = {
+      post: "/crm/v1/clients"
+      body: "*"
+    };
+  };
+
+  // Получает покупателя по UUID.
+  rpc GetCustomer(GetCustomerRequest) returns (GetCustomerResponse){
+      option (google.api.http) = {
+          get: "/crm/v1/clients/{uuid}"
+      };
+  };
+
+  // Обновляет данные покупателя
+  rpc UpdateCustomer(UpdateCustomerRequest) returns (UpdateCustomerResponse){
+    option (google.api.http) = {
+      patch: "/crm/v1/clients/{uuid}",
+      body: "*"
+    };
+  };
+
+  // Удаляет информацию о покупателе
+  rpc DeleteCustomer(DeleteCustomerRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/crm/v1/clients/{uuid}",
+    };
+  };
+};
+

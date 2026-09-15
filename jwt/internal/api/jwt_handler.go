@@ -10,7 +10,7 @@ import (
 
 	jwtErrors "github.com/SigmarWater/crm/jwt/errors"
 	"github.com/SigmarWater/crm/jwt/internal/service"
-	jwtv1 "github.com/SigmarWater/crm/jwt/pkg/jwt/v1"
+	jwtv1 "github.com/SigmarWater/crm/shared/pkg/jwt_service/v1"
 )
 
 // JWTHandler - gRPC хендлер для JWT сервиса

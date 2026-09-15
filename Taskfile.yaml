@@ -8,9 +8,6 @@ dotenv:
 
 # Глобальные переменные проекта
 vars:
-
-  VPS_HOST: '{{.VPS_HOST}}'
-  VPS_USER: '{{.VPS_USER}}'
   GO_VERSION: '1.27.1'
   GOLANGCI_LINT_VERSION: 'v2.13.2'
   GCI_VERSION: 'v0.14.0'
@@ -22,6 +19,9 @@ vars:
   PROTOC_GEN_GRPC_GATEWAY_VERSION: 'v2.26.3'
   PROTOC_GEN_OPENAPIV2_VERSION: 'v2.26.3'
   GOOSE_VERSION: 'v3.28.0'
+
+  VPS_HOST: '{{.VPS_HOST}}'
+  VPS_USER: '{{.VPS_USER}}'
 
   BIN_DIR: '{{.ROOT_DIR}}/bin'
   GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint.exe'
@@ -37,6 +37,8 @@ vars:
 
   GOOSE_DRIVER: postgres
   GOOSE_DBSTRING: "{{.DB_URI}}"
+
+  MODULES: customer jwt
 
 tasks:
   install-formatters:
@@ -110,50 +112,84 @@ tasks:
         }        
 
   format:
-    desc: "Форматирует весь проект gofumpt + gci"
+    desc: "Форматирует все Go-модули через gofumpt + gci"
     deps: [ install-formatters ]
     cmds:
       - |
-        echo "Форматируем через gofumpt ..."
-        for file in **/*.go; do
-          case "$file" in
-            */mocks/*) continue ;;
-          esac
-          "{{.GOFUMPT}}" -extra -w "$file"
-        done
-
-      - |
-        echo "Сортируем импорты через gci ..."
-        for file in **/*.go; do
-          case "$file" in
-            */mocks/*) continue ;;
-          esac
-          "{{.GCI}}" write -s standard -s default -s "prefix(github.com/SigmarWater/crm/)" "$file"
+        for dir in {{.MODULES}}; do
+          echo "=== Formatting $dir ==="
+        
+          (
+            cd "$dir" || exit 1
+        
+            echo "  gofumpt..."
+            for file in **/*.go; do
+              case "$file" in
+                */mocks/*) continue ;;
+              esac
+        
+              "{{.GOFUMPT}}" -extra -w "$file"
+            done
+        
+            echo "  gci..."
+            for file in **/*.go; do
+              case "$file" in
+                */mocks/*) continue ;;
+              esac
+        
+              "{{.GCI}}" write \
+                -s standard \
+                -s default \
+                -s "prefix(github.com/SigmarWater/crm/)" \
+                "$file"
+            done
+          ) || exit $?
         done
 
   lint:
     desc: "Запускает golangci-lint для всех модулей"
     deps: [ install-golangci-lint ]
     cmds:
-      - '"{{.GOLANGCI_LINT}}" run ./... --config=.golangci.yml'
+      - |
+        for dir in {{.MODULES}}; do
+          echo "=== Linting $dir ==="
+          (
+            cd "$dir" || exit 1
+            "../bin/golangci-lint.exe" run ./... --config=../.golangci.yml
+          ) || exit $?
+        done
+
+  deps:update:
+    desc: "Обновление зависимостей в go.mod во всех модулях"
+    cmds:
+      - |
+        echo "🔄 Обновление зависимостей в go.work"
+        go work sync
+        echo "🔄 Обновление зависимостей в go.mod во всех модулях"
+        for mod in {{.MODULES}}; do
+          if [ -d "$mod" ]; then
+            echo "🔄 Обновление зависимостей в $mod"
+            (cd "$mod" && go mod tidy -compat=1.24) || exit 1
+          fi
+        done
 
   proto:update-deps:
     deps: [ install-buf ]
     desc: Обновляет зависимости protobuf из удаленных репозиториев (googleapis и т.д.)
-    dir: proto
+    dir: ./shared/proto
     cmds:
       - |
         echo "Обновляем зависимости buf..."
-        ../bin/buf.exe dep update
+        ../../bin/buf.exe dep update
 
   proto:lint:
     deps: [proto:install-plugins, proto:update-deps]
     desc: Проверка .proto-файлов на соответствие стилю
-    dir: proto
+    dir: ./shared/proto
     cmds:
       - |
         echo "Проверяем .proto файлы..."
-        ../bin/buf.exe lint
+        ../../bin/buf.exe lint
 
   install-goose:
     desc: "Устанавливает goose в ./bin"
@@ -164,21 +200,21 @@ tasks:
           GOBIN={{.BIN_DIR}} go install github.com/pressly/goose/v3/cmd/goose@{{.GOOSE_VERSION}}
         }
     
-  migrations-up:
-    desc: "Накатка миграций"
-    dir: migrations
-    cmds:
-      - |
-        echo "Накатываем миграции..."
-        ../bin/goose.exe goose up 
-
-  migrations-down:
-    desc: "Откат миграций"
-    dir: migrations
-    cmds:
-      - | 
-        echo "Откат миграций..."
-        GOOSE_DRIVER=postgres GOOSE_DBSTRING="{{.DB_URI}}" ../bin/goose.exe down
+#  migrations-up:
+#    desc: "Накатка миграций"
+#    dir: ./customer/migrations
+#    cmds:
+#      - |
+#        echo "Накатываем миграции..."
+#        ../../bin/goose.exe goose up
+#
+#  migrations-down:
+#    desc: "Откат миграций"
+#    dir: ./customer/migrations
+#    cmds:
+#      - |
+#        echo "Откат миграций..."
+#        GOOSE_DRIVER=postgres GOOSE_DBSTRING="{{.DB_URI}}" ../../bin/goose.exe down
 
   proto:gen-code:
     deps: [proto:lint]
@@ -187,40 +223,27 @@ tasks:
     # (поэтому мы и пишем ../bin/buf.exe)
     # dir должна указывать на директорию, где находится buf.yaml и buf.gen.yaml.
     # «Перед выполнением команды перейди в директорию proto.»
-    dir: proto
+    dir: ./shared/proto
     cmds:
       - |
         echo "Генерируем Go код из .proto..."
-        ../bin/buf.exe generate --template buf.gen.yaml
+        ../../bin/buf.exe generate --template buf.gen.yaml
 
   proto:gen:
     deps: [proto:gen-code]
     desc: Генерация документации
-    dir: proto
+    dir: ./shared/proto
     cmds:
       - |
         echo "Генерируем Go документацию..."
-        ../bin/buf.exe generate --template buf.gen.openapi.yaml
-
-  start:server:
-    cmds:
-      - |
-        echo "Запускаем сервер..."
-        go run ./cmd/server/main.go
-
-  start:client:
-    cmds:
-      - |
-        echo "Запускаем клиент..."
-        go run ./cmd/client/main.go
-
+        ../../bin/buf.exe generate --template buf.gen.openapi.yaml
 
   docker:up:
     desc: "Запустить Docker Compose на VPS"
     cmds:
       - ssh {{.VPS_USER}}@{{.VPS_HOST}} "mkdir -p /opt/crm-dev"
 
-      - scp deploy/compose/client/docker-compose.yml {{.VPS_USER}}@{{.VPS_HOST}}:/opt/crm-dev/docker-compose.yml
+      - scp deploy/compose/customer/docker-compose.yml {{.VPS_USER}}@{{.VPS_HOST}}:/opt/crm-dev/docker-compose.yml
 
       - scp deploy/env/.env {{.VPS_USER}}@{{.VPS_HOST}}:/opt/crm-dev/.env
 
@@ -230,3 +253,23 @@ tasks:
     desc: "Остановить Docker Compose на VPS"
     cmds:
       - ssh {{.VPS_USER}}@{{.VPS_HOST}} "cd /opt/crm-dev && docker compose down"
+
+
+  start:customer-service:
+    deps: [docker:up]
+    cmds:
+      - |
+        echo "Запускаем сервер..."
+        go run ./customer/cmd/server/main.go
+
+  start:client-of-customer-service:
+    cmds:
+      - |
+        echo "Запускаем клиент..."
+        go run ./customer/cmd/client/main.go
+
+  start:jwt-service:
+    cmds:
+      - |
+        echo "Запускаем сервер..."
+        go run ./jwt/cmd/server/main.go

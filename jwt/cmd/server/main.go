@@ -10,7 +10,7 @@ import (
 
 	"github.com/SigmarWater/crm/jwt/internal/api"
 	"github.com/SigmarWater/crm/jwt/internal/service"
-	jwtV1 "github.com/SigmarWater/crm/jwt/pkg/jwt/v1"
+	jwtV1 "github.com/SigmarWater/crm/shared/pkg/jwt_service/v1"
 )
 
 const (
@@ -40,13 +40,13 @@ func main() {
 		return
 	}
 
-	fmt.Printf("🚀 JWT gRPC server listening on %s\n", grpcPort)
-	fmt.Println("📋 Available users:")
-	fmt.Println("  - admin:admin123")
-	fmt.Println("  - user1:password1")
-	fmt.Println("  - user2:password2")
-	fmt.Println("  - john:john123")
-	fmt.Println("  - alice:alice456")
+	fmt.Printf("🚀 JWT gRPC server listening on %s\n", grpcPort) //nolint:forbidigo
+	fmt.Println("📋 Available users:")                           //nolint:forbidigo
+	fmt.Println("  - admin:admin123")                           //nolint:forbidigo
+	fmt.Println("  - user1:password1")                          //nolint:forbidigo
+	fmt.Println("  - user2:password2")                          //nolint:forbidigo
+	fmt.Println("  - john:john123")                             //nolint:forbidigo
+	fmt.Println("  - alice:alice456")                           //nolint:forbidigo
 
 	// Запускаем сервер
 	err = grpcServer.Serve(listener)
